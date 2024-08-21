@@ -27,8 +27,8 @@ class _GameScreenState extends State<GameScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Lottie.asset('lib/assets/xo.json',
-          height: 200,
-          width: 400),
+          height: 100,
+          width: 200),
           Center(
             child: Text('Lets Start the Game🕹️',
             style: TextStyle(
@@ -36,27 +36,56 @@ class _GameScreenState extends State<GameScreen> {
               fontWeight: FontWeight.bold
             ),),
           ),
-          GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3),
-            itemCount: 9,
-             itemBuilder:(context,index){
-               return Consumer<GameProvider>(
-            builder: (context, gameProvider, child) {
-              return GestureDetector(
-                onTap: () => gameProvider.makeMove(index),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Center(
-                    child: Text(
-                      gameProvider.board[index],
-                      style: const TextStyle(fontSize: 40),
+          const SizedBox(height:0,),
+          Consumer<GameProvider>(
+              builder: (context, gameProvider, child) {
+                return Text(
+                Provider.of<GameProvider>(context).winner != ''
+                      ? 'Winner: ${ Provider.of<GameProvider>(context).winner}'
+                      : 'Current Player: ${ Provider.of<GameProvider>(context).currentplayer}',
+                  style: const TextStyle(fontSize: 24),
+                );
+              },
+            ),
+            const SizedBox(height: 10,),
+          Expanded(
+            child: Container(
+              height: 200,
+              width: 400,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3),
+                itemCount: 9,
+                 itemBuilder:(context,index){
+                   return AnimatedBuilder(animation:Provider.of<GameProvider>(context),
+                    builder:(context,child){
+                  return GestureDetector(
+                    onTap: () =>Provider.of<GameProvider>(context, listen: false).makeMove(index),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                      ),
+                      child: Center(
+                        child: Text(
+                         Provider.of<GameProvider>(context).board[index],
+                          style: const TextStyle(fontSize: 40),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-             });},)
+                  );
+                 });},),
+            ),
+          ),
+           //  const SizedBox(height: 20,),
+           
+
+             IconButton(onPressed: (){
+              Provider.of(context,listen: false).resetGame();
+             },
+              icon:Icon(Icons.games_outlined,
+              size:20 ,))
           
         ],
       ),
